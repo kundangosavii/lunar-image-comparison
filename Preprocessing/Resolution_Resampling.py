@@ -40,9 +40,6 @@ def Resolution_Resampling(
 ):
     """
     Resample source and reference NumPy images to a common spatial resolution.
-
-    Images are passed as NumPy arrays.
-    Sensor resolutions are determined from the filenames.
     """
 
     source_sensor = detect_sensor_from_name(source_filename)
@@ -81,9 +78,6 @@ def Resolution_Resampling(
 
     interpolation = interpolation_map[method]
 
-    # -------------------------
-    # Source
-    # -------------------------
 
     source_h, source_w = source_image.shape[:2]
 
@@ -115,10 +109,6 @@ def Resolution_Resampling(
             f"Source: already at "
             f"{target_resolution} m/px"
         )
-
-    # -------------------------
-    # Reference
-    # -------------------------
 
     reference_h, reference_w = reference_image.shape[:2]
 
