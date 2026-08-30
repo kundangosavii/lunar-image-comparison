@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lunar Registry System</title>
+    <style>
+      :root {
+        --bg: #08131d;
+        --panel: #0f1d2a;
+        --panel-2: #132535;
+        --panel-3: #1a2d3f;
+        --line: rgba(255, 255, 255, 0.08);
+        --text: #edf3fb;
+        --muted: #8fa6be;
+        --soft: #b7c6d6;
+        --accent: #f98a1a;
+        --accent-2: #ffb067;
+        --success: #4fe3a8;
+        --danger: #ff7f7f;
+        --shadow: rgba(0, 0, 0, 0.45);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html, body {
+        margin: 0;
+        min-height: 100%;
+        background:
+          radial-gradient(circle at top left, rgba(46, 70, 94, 0.5), transparent 28%),
+          linear-gradient(180deg, #071117 0%, #090f18 100%);
+        color: var(--text);
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        padding: 24px;
+      }
+
+      .app-shell {
+        max-width: 1400px;
+        margin: 0 auto;
+        background: rgba(9, 17, 24, 0.86);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 30px 60px var(--shadow);
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 18px 22px 16px;
+        background: rgba(10, 20, 30, 0.9);
+        border-bottom: 1px solid var(--line);
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        font-weight: 700;
+        font-size: 15px;
+        color: #e7eefb;
+      }
+
+      .brand-mark {
+        width: 14px;
+        height: 14px;
+        border-radius: 4px;
+        background: linear-gradient(135deg, var(--accent), #ffb067);
+        box-shadow: 0 0 12px rgba(249, 138, 26, 0.7);
+      }
+
+      .topbar-right {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .topbar-pill {
+        padding: 6px 10px;
+        border-radius: 8px;
+        background: rgba(255,255,255,0.02);
+        border: 1px solid var(--line);
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        min-height: 760px;
+      }
+
+      .sidebar {
+        background: rgba(8, 19, 29, 0.96);
+        border-right: 1px solid var(--line);
+        padding: 18px 18px 22px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .section-label {
+        margin: 8px 8px 14px;
+        color: var(--muted);
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        font-size: 11px;
+        font-weight: 700;
+      }
+
+      .uploader {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .upload-box {
+        background: rgba(19, 37, 53, 0.7);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        height: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: var(--soft);
+        cursor: pointer;
+        transition: 0.2s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .upload-box:hover {
+        border-color: rgba(249, 138, 26, 0.8);
+      }
+
+      .upload-box input[type="file"] {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        cursor: pointer;
+      }
+
+      .upload-box .inner {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        pointer-events: none;
+      }
+
+      .upload-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid var(--line);
+        display: grid;
+        place-items: center;
+        font-size: 18px;
+      }
+
+      .upload-caption {
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .file-name {
+        margin-top: 8px;
+        font-size: 12px;
+        color: var(--soft);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .field-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-top: 8px;
+      }
+
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .field label {
+        font-size: 12px;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .select-wrap {
+        position: relative;
+      }
+
+      select {
+        width: 100%;
+        appearance: none;
+        -webkit-appearance: none;
+        background: rgba(19, 37, 53, 0.85);
+        color: var(--text);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 12px 38px 12px 14px;
+        font-size: 14px;
+        outline: none;
+      }
+
+      .select-wrap::after {
+        content: "▾";
+        position: absolute;
+        right: 13px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--muted);
+        pointer-events: none;
+        font-size: 13px;
+      }
+
+      .btn-primary {
+        margin-top: 18px;
+        width: 100%;
+        border: none;
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        color: #17171a;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        border-radius: 8px;
+        padding: 16px 20px;
+        cursor: pointer;
+        box-shadow: 0 8px 20px rgba(249, 138, 26, 0.22);
+      }
+
+      .btn-primary:hover {
+        filter: brightness(1.06);
+      }
+
+      .content {
+        background:
+          linear-gradient(180deg, rgba(10, 18, 25, 0.88), rgba(7, 15, 21, 0.92)),
+          repeating-linear-gradient(
+            to bottom,
+            rgba(255,255,255,0.02),
+            rgba(255,255,255,0.02) 1px,
+            transparent 1px,
+            transparent 2px
+          );
+        padding: 20px 20px 30px;
+      }
+
+      .stats-row {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(160px, 1fr));
+        gap: 14px;
+        margin-bottom: 20px;
+      }
+
+      .stat-card {
+        background: rgba(17, 28, 40, 0.8);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 18px 16px 14px;
+        min-height: 108px;
+      }
+
+      .stat-label {
+        font-size: 11px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .stat-value {
+        margin-top: 12px;
+        font-size: 28px;
+        font-weight: 700;
+        letter-spacing: -0.04em;
+        color: #f3f7ff;
+      }
+
+      .bar {
+        margin-top: 14px;
+        height: 6px;
+        background: rgba(255,255,255,0.08);
+        border-radius: 999px;
+        overflow: hidden;
+      }
+
+      .bar > span {
+        display: block;
+        height: 100%;
+        width: 70%;
+        background: linear-gradient(90deg, #ff9a3d, #f6801d);
+      }
+
+      .table-panel {
+        background: rgba(17, 28, 40, 0.78);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0;
+        overflow: hidden;
+      }
+
+      .table-head {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--line);
+        color: var(--muted);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-size: 11px;
+      }
+
+      .table-row {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr;
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--line);
+        align-items: center;
+      }
+
+      .table-row:last-child {
+        border-bottom: none;
+      }
+
+      .method-name {
+        font-weight: 600;
+        color: var(--text);
+      }
+
+      .status {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 600;
+      }
+
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+      }
+
+      .ok { background: var(--success); }
+      .warn { background: #ffb454; }
+      .bad { background: var(--danger); }
+
+      .result-panel {
+        display: none;
+        margin-top: 20px;
+        background: rgba(17, 28, 40, 0.82);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        overflow: hidden;
+      }
+
+      .result-panel.active {
+        display: block;
+      }
+
+      .result-head {
+        padding: 16px 18px;
+        border-bottom: 1px solid var(--line);
+        font-size: 13px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .result-image-wrap {
+        padding: 16px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 440px;
+        background: rgba(9, 17, 25, 0.7);
+      }
+
+      .result-image-wrap img {
+        max-width: 100%;
+        max-height: 500px;
+        border-radius: 12px;
+        border: 1px solid var(--line);
+        background: #02070c;
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+      }
+
+      .helper-text {
+        margin-top: 16px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      @media (max-width: 980px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+
+        .sidebar {
+          border-right: none;
+          border-bottom: 1px solid var(--line);
+        }
+
+        .stats-row {
+          grid-template-columns: repeat(2, minmax(140px, 1fr));
+        }
+
+        .table-head, .table-row {
+          grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr;
+          font-size: 10px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-mark"></span>
+          <span>Lunar Registry System</span>
+        </div>
+
+        <div class="topbar-right">
+          <span class="topbar-pill">Live</span>
+          <span>Mode</span>
+        </div>
+      </header>
+
+      <div class="layout">
+        <aside class="sidebar">
+          <div class="section-label">Image Inputs</div>
+
+          <div class="uploader">
+            <label class="upload-box">
+              <input type="file" id="sourceFile" accept="image/*" />
+              <div class="inner">
+                <div class="upload-icon">◫</div>
+                <div>Source</div>
+                <div class="upload-caption">Choose Image</div>
+              </div>
+            </label>
+            <div id="sourceFileName" class="file-name">No file selected</div>
+
+            <label class="upload-box">
+              <input type="file" id="referenceFile" accept="image/*" />
+              <div class="inner">
+                <div class="upload-icon">◫</div>
+                <div>Reference</div>
+                <div class="upload-caption">Choose Image</div>
+              </div>
+            </label>
+            <div id="referenceFileName" class="file-name">No file selected</div>
+          </div>
+
+          <div class="field-grid" style="margin-top: 18px;">
+            <div class="field">
+              <label>Source Sensor</label>
+              <div class="select-wrap">
+                <select id="sourceSensor">
+                  <option value="OHR">OHR</option>
+                  <option value="NRC">NRC</option>
+                  <option value="NAC">NAC</option>
+                  <option value="TMC">TMC</option>
+                  <option value="IIRS">IIRS</option>
+                  <option value="WAC">WAC</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Reference Sensor</label>
+              <div class="select-wrap">
+                <select id="referenceSensor">
+                  <option value="NAC">NAC</option>
+                  <option value="OHR">OHR</option>
+                  <option value="NRC">NRC</option>
+                  <option value="TMC">TMC</option>
+                  <option value="IIRS">IIRS</option>
+                  <option value="WAC">WAC</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <button class="btn-primary" id="matchBtn">Execute Registration</button>
+
+          <div class="helper-text">
+            Choose the source and reference images, then select the correct sensor class for each.
+          </div>
+        </aside>
+
+        <main class="content">
+          <div class="stats-row">
+            <div class="stat-card">
+              <div class="stat-label">RMSE</div>
+              <div class="stat-value" id="rmseValue">0</div>
+              <div class="bar"><span id="rmseBar"></span></div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-label">Inlier Ratio</div>
+              <div class="stat-value" id="inlierValue">0</div>
+              <div class="bar"><span id="inlierRatioBar"></span></div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-label">Inlier Count</div>
+              <div class="stat-value" id="inlierCount">0</div>
+              <div class="bar"><span id="inlierCountBar"></span></div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-label">Compute Time</div>
+              <div class="stat-value" id="timeValue">0</div>
+              <div class="bar"><span id="timeBar"></span></div>
+            </div>
+          </div>
+
+          <div class="result-panel" id="resultPanel">
+            <div class="result-head">Registered Result</div>
+            <div class="result-image-wrap">
+              <img id="resultImage" alt="Result image" />
+            </div>
+          </div>
+          
+        </main>
+      </div>
+    </div>
+
+    <script>
+      const sourceInput = document.getElementById("sourceFile");
+      const referenceInput = document.getElementById("referenceFile");
+      const sourceFileName = document.getElementById("sourceFileName");
+      const referenceFileName = document.getElementById("referenceFileName");
+      const matchBtn = document.getElementById("matchBtn");
+      const resultPanel = document.getElementById("resultPanel");
+      const resultImage = document.getElementById("resultImage");
+
+      sourceInput.addEventListener("change", () => {
+        sourceFileName.textContent = sourceInput.files[0]
+          ? sourceInput.files[0].name
+          : "No file selected";
+      });
+
+      referenceInput.addEventListener("change", () => {
+        referenceFileName.textContent = referenceInput.files[0]
+          ? referenceInput.files[0].name
+          : "No file selected";
+      });
+
+      matchBtn.addEventListener("click", async () => {
+        const sourceFile = sourceInput.files[0];
+        const referenceFile = referenceInput.files[0];
+        const sourceSensor = document.getElementById("sourceSensor").value;
+        const referenceSensor = document.getElementById("referenceSensor").value;
+
+        if (!sourceFile || !referenceFile) {
+          alert("Please choose both images.");
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append("source", sourceFile);
+        formData.append("reference", referenceFile);
+        formData.append("source_sensor", sourceSensor);
+        formData.append("reference_sensor", referenceSensor);
+
+        try {
+          const response = await fetch("http://localhost:8000/image/match", {
+            method: "POST",
+            body: formData
+          });
+
+          if (!response.ok) {
+            throw new Error("Backend request failed");
+          }
+
+          const data = await response.json();
+
+          
+        const rmse = Number(data.rmse ?? 0);
+        const inlierRatio = Number(data.inlier_ratio ?? 0);
+        const inlierCount = Number(data.inlier_count ?? 0);
+        const computeTime = Number(data.compute_time ?? 0);
+
+        document.getElementById("rmseValue").textContent = rmse.toFixed(2);
+        document.getElementById("inlierValue").textContent = `${(inlierRatio * 100).toFixed(1)}%`;
+        document.getElementById("inlierCount").textContent = inlierCount.toLocaleString();
+        document.getElementById("timeValue").textContent = `${computeTime.toFixed(1)}s`;
+
+        const rmseBar = document.getElementById("rmseBar");
+        const inlierRatioBar = document.getElementById("inlierRatioBar");
+        const inlierCountBar = document.getElementById("inlierCountBar");
+        const timeBar = document.getElementById("timeBar");
+
+        rmseBar.style.width = `${Math.min((rmse / 10) * 100, 100)}%`;
+        inlierRatioBar.style.width = `${Math.min(inlierRatio * 100, 100)}%`;
+        inlierCountBar.style.width = `${Math.min((inlierCount / 2000) * 100, 100)}%`;
+        timeBar.style.width = `${Math.min((computeTime / 10) * 100, 100)}%`;
+
+          if (!data.match_image) {
+            alert("No image returned from backend.");
+            return;
+          }
+
+          resultImage.src = `data:image/png;base64,${data.match_image}`;
+          resultPanel.classList.add("active");
+        } catch (error) {
+          console.error(error);
+          alert("Failed to fetch. Check backend server and CORS.");
+        }
+      });
+    </script>
+  </body>
+</html>
